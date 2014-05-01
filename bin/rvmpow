@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+require 'thor'
+require 'rvmpow'
+
+class CLI < Thor
+	desc "init", "makes current rails app compatible with pow"
+	long_desc <<-LONGDESC
+		`rvmpow init` will:
+
+		- create a '.powenv' file in the current directory.
+		\x5- add .powenv to the .gitignore file
+		\x5- add the current app to pow
+	LONGDESC
+	option :show, type: :boolean, desc: "open in default browser"
+	def init
+		if !(railsApp? && rvm?)
+			error "The current directory does not seem to be the root of a rails app or rvm is not installed. Nothing to do!"
+		else
+			pow = RvmPow::Pow.new
+			pow.init
+		end
+	end
+
+	desc "open", "open the current rails app in the default browser"
+	def open
+		%x(open http://#{RvmPow::Pow::APPNAME}.dev) if !(railsApp? && rvm?)
+	end
+
+	private
+		def railsApp?
+			File.exists?("#{File.expand_path('.')}/bin/rails")
+		end
+
+		def rvm?
+			File.exists?("#{File.expand_path('~/')}/.rvm/bin/rvm")
+		end
+
+		def createLink
+
+		end
+end
+
+CLI.start(ARGV)
