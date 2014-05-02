@@ -5,7 +5,14 @@ require 'thor'
 require 'rvmpow'
 
 class CLI < Thor
-	desc "init", "makes current rails app compatible with pow"
+
+	def initialize(*args)
+	  super
+	  exitIfNotRakeAppOrNoRvm
+	  @pow = RvmPow::Pow.new
+	end
+
+	desc "init", "enable pow"
 	long_desc <<-LONGDESC
 		`rvmpow init` will:
 
@@ -15,29 +22,48 @@ class CLI < Thor
 	LONGDESC
 	option :show, type: :boolean, desc: "open in default browser"
 	def init
-		if !(railsApp? && rvm?)
-			error "The current directory does not seem to be the root of a rails app or rvm is not installed. Nothing to do!"
+
+		if @pow.init
+			say_status "Done", "Initialization", :green
+			if options[:show]
+				say "Opening app in default browser"
+				open
+			else
+				say "Open your app in the default with `rvmpow open`"
+			end
 		else
-			pow = RvmPow::Pow.new
-			pow.init
+			say_status "Failed", "Initialization.", :red
 		end
+
 	end
 
-	desc "open", "open the current rails app in the default browser"
+	desc "open", "open the current rake app in the default browser"
 	def open
-		%x(open http://#{RvmPow::Pow::APPNAME}.dev) if !(railsApp? && rvm?)
+		%x(open http://#{RvmPow::APP_NAME}.dev)
+	end
+
+	desc "clear", "disable pow"
+	long_desc <<-LONGDESC
+		`rvmpow clear` will remove only the files necessary for pow.
+	LONGDESC
+	def clear
+		@pow.clear
 	end
 
 	private
-		def railsApp?
-			File.exists?("#{File.expand_path('.')}/bin/rails")
+		def rakeApp?
+			File.exists?(RvmPow::CONFIG_RU)
 		end
 
 		def rvm?
-			File.exists?("#{File.expand_path('~/')}/.rvm/bin/rvm")
+			File.exists?(RvmPow::RVM_BINARY)
 		end
 
-		def createLink
+		def exitIfNotRakeAppOrNoRvm
+			if !(rakeApp? && rvm?)
+			error "The current directory does not seem to be the root of a rake app or rvm is not installed. Nothing to do!"
+			exit 0
+		end
 
 		end
 end

@@ -1,24 +1,47 @@
 # Rvmpow
 
-TODO: Write a gem description
+`rvmpow` is usefull only if:
+
+- you are a rails developper
+- you use rvm
+- you use pow
+
+[Pow](http://pow.cx) needs to know what ruby and gemset is being used.
+
+You can add this information [manually](http://rvm.io/integration/pow) or use rvmpow`.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'rvmpow'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install rvmpow
+```
+$ gem install rvmpow
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+Make sure you are in the root directory of your rails app before running:
+
+```
+$ rvmpow init
+```
+
+To open the app in your default browser directly after initialization, run:
+
+
+```
+$ rvmpow init --show
+```
+
+To open the app after initialization, run:
+
+```
+$ rvmpow open
+```
+
+rvmpow comes with extensive help built in, just run:
+
+```
+$ rvmpow
+```
 
 ## Contributing
 
