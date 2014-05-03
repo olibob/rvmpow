@@ -1,10 +1,76 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-# TODO: init is good but more options would be nice ;-) Make it so #1
+# TODO: include private part from CLI in all Thor classes.
 
 require 'thor'
 require 'rvmpow'
+
+class Add < Thor
+	def initialize(*args)
+	  super
+	  @pow = RvmPow::Pow.new
+	end
+
+	desc "powenv", "Add .powenv file"
+	def powenv
+		@pow.createPowenvFile
+	end
+
+	desc "powlink", "Add app link i ~/.pow"
+	def powlink
+		@pow.createPowLink
+	end
+
+	desc "restart_file", "Touch restart.txt file in ./tmp/"
+	def restart_file
+		@pow.touchRestartFile
+	end
+
+	desc "gitignore", "Add '.powenv' to ./.gitignore"
+	def gitignore
+		@pow.gitignorePowenv
+	end
+
+	desc "addRvmInfoToGemfile", "Add rvm ruby and gemset information to ./Gemfile"
+	def gemfile
+		@pow.addRvmInfoToGemfile
+	end
+end
+
+
+class Remove < Thor
+	def initialize(*args)
+	  super
+	  @pow = RvmPow::Pow.new
+	end
+
+	desc "powenv", "Remove .powenv file"
+	def powenv
+		@pow.deletePowenvFile
+	end
+
+	desc "restart", "Remove restart.txt file from ./tmp/"
+	def restart
+		@pow.deleteRestartFile
+	end
+
+	desc "powlink", "Remove app link from ~/.pow"
+	def powlink
+		@pow.deletePowLink
+	end
+
+	desc "gitignore", "Remove .powenv from ./.gitignore"
+	def gitignore
+		@pow.restoreGitignore
+	end
+
+	desc "gemfile", "Remove rvm and gemset information from ./Gemfile"
+	def gemfile
+		@pow.restoreGemfile
+	end
+end
+
 
 class CLI < Thor
 
@@ -134,6 +200,12 @@ class CLI < Thor
 		end
 	end
 
+	desc "add SUBCOMMAND", "add specific options"
+	subcommand "add", Add
+
+	desc "remove SUBCOMMAND", "remove specific options"
+	subcommand "remove", Remove
+
 	private
 
 		def rakeApp?
@@ -149,7 +221,6 @@ class CLI < Thor
 				error "The current directory does not seem to be the root of a rake app or rvm is not installed. Nothing to do!"
 				exit 0
 			end
-
 		end
 end
 
