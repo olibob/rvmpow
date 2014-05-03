@@ -2,13 +2,15 @@
 
 `rvmpow` is usefull only if:
 
-- you are a rails developper
 - you use rvm
 - you use pow
+- you are a rails developper or develop a rake app
 
 [Pow](http://pow.cx) needs to know what ruby and gemset is being used.
 
 You can add this information [manually](http://rvm.io/integration/pow) or use rvmpow`.
+
+I only tested on a *fresh* rails app. Feedback is more then welcome.
 
 ## Installation
 
@@ -18,7 +20,7 @@ $ gem install rvmpow
 
 ## Usage
 
-Make sure you are in the root directory of your rails app before running:
+Make sure you are in the root directory of your rake app before running:
 
 ```
 $ rvmpow init

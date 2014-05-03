@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
+# TODO: init is good but more options would be nice ;-) Make it so #1
+
 require 'thor'
 require 'rvmpow'
 
@@ -8,9 +10,9 @@ class CLI < Thor
 
 	def initialize(*args)
 	  super
-	  exitIfNotRakeAppOrNoRvm
 	  @pow = RvmPow::Pow.new
 	end
+
 
 	desc "init", "enable pow"
 	long_desc <<-LONGDESC
@@ -22,35 +24,118 @@ class CLI < Thor
 	LONGDESC
 	option :show, type: :boolean, desc: "open in default browser"
 	def init
+		exitIfNotRakeAppOrNoRvm
+		shitHappens = false
 
-		if @pow.init
-			say_status "Done", "Initialization", :green
-			if options[:show]
-				say "Opening app in default browser"
-				open
-			else
-				say "Open your app in the default with `rvmpow open`"
-			end
-		else
-			say_status "Failed", "Initialization.", :red
+		# fail safe to avoid multiple initializations
+		if File.exists?('.powenv')
+			say "Initialization aborted.\nLooks like you already ran it on this project."
+			exit 0
 		end
 
+		if @pow.createPowenvFile
+			say_status "Done", "Create .powenv file", :green
+		else
+			say_status "Failed", "Create .powenv file", :red
+			shitHappens = true
+		end
+
+		if @pow.createPowLink
+			say_status "Done", "Create pow link", :green
+		else
+			say_status "Failed", "Create pow link", :red
+			shitHappens = true
+		end
+
+		if @pow.touchRestartFile
+			say_status "Done", "Touch restart file", :green
+		else
+			say_status "Failed", "Touch restart file", :red
+			shitHappens = true
+		end
+
+		if @pow.gitignorePowenv
+			say_status "Done", "Add .powenv to .gitignore", :green
+		else
+			say_status "Failed", "Add .powenv to .gitignore", :red
+			shitHappens = true
+		end
+
+		if @pow.addRvmInfoToGemfile
+			say_status "Done", "Add ruby and gemset info to Gemfile", :green
+		else
+			say_status "Failed", "Add ruby and gemset info to Gemfile", :red
+			shitHappens = true
+		end
+
+		if options[:show]
+			if shitHappens
+				say "Opening app in default browser canceled due to previous error(s)"
+				say "Initialization failed.", :red
+			else
+				say "Opening app in default browser"
+				open
+			end
+		end
 	end
+
 
 	desc "open", "open the current rake app in the default browser"
 	def open
 		%x(open http://#{RvmPow::APP_NAME}.dev)
 	end
 
+
 	desc "clear", "disable pow"
 	long_desc <<-LONGDESC
 		`rvmpow clear` will remove only the files necessary for pow.
 	LONGDESC
 	def clear
-		@pow.clear
+		exitIfNotRakeAppOrNoRvm
+		shitHappens = false
+
+		if @pow.restoreGitignore
+			say_status "Done", "Remove rvmpow entries from .gitignore", :green
+		else
+			say_status "Failed", "Remove rvmpow entries from .gitignore", :red
+			shitHappens = true
+		end
+
+		if @pow.restoreGemfile
+			say_status "Done", "Remove rvmpow entries from Gemfile", :green
+		else
+			say_status "Failed", "Remove rvmpow entries from Gemfile", :red
+			shitHappens = true
+		end
+
+		if @pow.deletePowenvFile
+			say_status "Done", "Delete .powenv file", :green
+		else
+			say_status "Failed", "Delete .powenv file", :red
+			shitHappens = true
+		end
+
+		if @pow.deleteRestartFile
+			say_status "Done", "Delete restart file", :green
+		else
+			say_status "Failed", "Delete restart file", :red
+			shitHappens = true
+		end
+
+		if @pow.deletePowLink
+			say_status "Done", "Delete pow link", :green
+		else
+			say_status "Failed", "Delete pow link", :red
+			shitHappens = true
+		end
+
+		if shitHappens
+			say "Removing rvmpow traces failed.", :red
+		end
 	end
 
 	private
+
 		def rakeApp?
 			File.exists?(RvmPow::CONFIG_RU)
 		end
@@ -61,9 +146,9 @@ class CLI < Thor
 
 		def exitIfNotRakeAppOrNoRvm
 			if !(rakeApp? && rvm?)
-			error "The current directory does not seem to be the root of a rake app or rvm is not installed. Nothing to do!"
-			exit 0
-		end
+				error "The current directory does not seem to be the root of a rake app or rvm is not installed. Nothing to do!"
+				exit 0
+			end
 
 		end
 end

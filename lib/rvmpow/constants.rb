@@ -6,10 +6,12 @@ module RvmPow
   APP_NAME = RAKE_APP_DIRECTORY.split('/').last
   POW_LINK = "#{POW_PATH}/#{APP_NAME}"
   GITIGNORE_FILE = "#{RAKE_APP_DIRECTORY}/.gitignore"
-  GITIGNORE_ENTRY = "# rvmpow\n.powenv"
+  GITIGNORE_ENTRY = "\n# rvmpow\n.powenv"
   GEMFILE = "#{RAKE_APP_DIRECTORY}/Gemfile"
   RVM_BINARY = "#{File.expand_path('~/')}/.rvm/bin/rvm"
   CONFIG_RU = "#{RvmPow::RAKE_APP_DIRECTORY}/config.ru"
+  GEMFILE_MATCHER = /.#\srvmpow.ruby\s'\d(\.\d)+'.#ruby-gemset=\S+/m
+  GITIGNORE_MATCHER = /.#\srvmpow.\.powenv/m
 
 	POWENV = <<-EOF
 # detect `$rvm_path`
