@@ -77,11 +77,13 @@ module RvmPow
 			fileAction action
 		end
 
+		# removes restart.txt file from ./tmp/
 		def deleteRestartFile
 			action = -> { FileUtils.rm_f RvmPow::RESTART_FILE }
 			fileAction action
 		end
 
+		# deletes the link is ~/.pow
 		def deletePowLink
 			action = -> { FileUtils.rm_f RvmPow::POW_LINK }
 			fileAction action
@@ -98,7 +100,7 @@ module RvmPow
 				false
 			end
 
-			# remove text from file based on regex
+			# removes text from file based on regex
 			def removeFromFile(file, regex)
 				# create tempfile
 				tmp = Tempfile.new "foo"
@@ -118,6 +120,7 @@ module RvmPow
 			end
 
 			# returns a hash with the ruby and gemset information
+			# @return [Hash]
 			def rvmInfo
 				rvm = {}
 				rvmArray = `rvm-prompt`.chomp.split('@')
