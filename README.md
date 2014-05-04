@@ -49,7 +49,7 @@ If you are already specifying the ruby version and gemset via .rvmrc or .ruby-ve
 Add this line to your application's Gemfile:
 
 ```
-gem 'toto'
+gem 'rvmpow'
 ```
 
 And then execute:
@@ -61,7 +61,7 @@ $ bundle
 Or install it yourself as:
 
 ```
-$ gem install toto
+$ gem install rvmpow
 ```
 
 ## Usage
