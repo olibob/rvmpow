@@ -2,81 +2,88 @@
 # encoding: utf-8
 
 # TODO: include private part from CLI in all Thor classes.
+#  			Create constants for repetitive strings.
 
 require 'thor'
 require 'rvmpow'
+require 'rvmpow/shared_private_methods'
 
 class Add < Thor
+	include RvmPow
+
 	def initialize(*args)
 	  super
-	  @pow = RvmPow::Pow.new
+	  @pow = Pow.new
 	end
 
-	desc "powenv", "Add .powenv file"
+	desc "powenv", ADD_POWENV
 	def powenv
-		@pow.createPowenvFile
+		exec_cmd { @pow.createPowenvFile }
 	end
 
-	desc "powlink", "Add app link i ~/.pow"
+	desc "powlink", ADD_LINK
 	def powlink
-		@pow.createPowLink
+		exec_cmd { @pow.createPowLink }
 	end
 
-	desc "restart_file", "Touch restart.txt file in ./tmp/"
+	desc "restart_file", TOUCH_RESTART
 	def restart_file
-		@pow.touchRestartFile
+		exec_cmd { @pow.touchRestartFile }
 	end
 
-	desc "gitignore", "Add '.powenv' to ./.gitignore"
+	desc "gitignore", ADD_GITIGNORE
 	def gitignore
-		@pow.gitignorePowenv
+		exec_cmd { @pow.gitignorePowenv }
 	end
 
-	desc "addRvmInfoToGemfile", "Add rvm ruby and gemset information to ./Gemfile"
+	desc "addRvmInfoToGemfile", ADD_GEMFILE
 	def gemfile
-		@pow.addRvmInfoToGemfile
+		exec_cmd { @pow.addRvmInfoToGemfile }
 	end
 end
 
 
 class Remove < Thor
+	include RvmPow
+
 	def initialize(*args)
 	  super
-	  @pow = RvmPow::Pow.new
+	  @pow = Pow.new
 	end
 
-	desc "powenv", "Remove .powenv file"
+	desc "powenv", REMOVE_POWENV
 	def powenv
-		@pow.deletePowenvFile
+		exec_cmd { @pow.deletePowenvFile }
 	end
 
-	desc "restart", "Remove restart.txt file from ./tmp/"
+	desc "restart", REMOVE_RESTART
 	def restart
-		@pow.deleteRestartFile
+		exec_cmd { @pow.deleteRestartFile }
 	end
 
-	desc "powlink", "Remove app link from ~/.pow"
+	desc "powlink", REMOVE_LINK
 	def powlink
-		@pow.deletePowLink
+		exec_cmd { @pow.deletePowLink }
 	end
 
-	desc "gitignore", "Remove .powenv from ./.gitignore"
+	desc "gitignore", REMOVE_GITIGNORE
 	def gitignore
-		@pow.restoreGitignore
+		exec_cmd { @pow.restoreGitignore }
 	end
 
-	desc "gemfile", "Remove rvm and gemset information from ./Gemfile"
+	desc "gemfile", REMOVE_GEMFILE
 	def gemfile
-		@pow.restoreGemfile
+		exec_cmd {@pow.restoreGemfile }
 	end
 end
 
 
 class CLI < Thor
+	include RvmPow
 
 	def initialize(*args)
 	  super
-	  @pow = RvmPow::Pow.new
+	  @pow = Pow.new
 	end
 
 
@@ -85,12 +92,17 @@ class CLI < Thor
 		`rvmpow init` will:
 
 		- create a '.powenv' file in the current directory.
-		\x5- add .powenv to the .gitignore file
-		\x5- add the current app to pow
+		\x5- add .powenv to the .gitignore file.
+		\x5- add app link in ~/.pow
+		\x5- add ruby and gemset info to Gemfile.
+		\x5- touch restart.txt in ./tmp/
+
+
 	LONGDESC
 	option :show, type: :boolean, desc: "open in default browser"
 	def init
-		exitIfNotRakeAppOrNoRvm
+		exec_cmd {nil}
+
 		shitHappens = false
 
 		# fail safe to avoid multiple initializations
@@ -100,37 +112,37 @@ class CLI < Thor
 		end
 
 		if @pow.createPowenvFile
-			say_status "Done", "Create .powenv file", :green
+			say_status "Done", ADD_POWENV, :green
 		else
-			say_status "Failed", "Create .powenv file", :red
+			say_status "Failed", ADD_POWENV, :red
 			shitHappens = true
 		end
 
 		if @pow.createPowLink
-			say_status "Done", "Create pow link", :green
+			say_status "Done", ADD_LINK, :green
 		else
-			say_status "Failed", "Create pow link", :red
+			say_status "Failed", ADD_LINK, :red
 			shitHappens = true
 		end
 
 		if @pow.touchRestartFile
-			say_status "Done", "Touch restart file", :green
+			say_status "Done", TOUCH_RESTART, :green
 		else
-			say_status "Failed", "Touch restart file", :red
+			say_status "Failed", TOUCH_RESTART, :red
 			shitHappens = true
 		end
 
 		if @pow.gitignorePowenv
-			say_status "Done", "Add .powenv to .gitignore", :green
+			say_status "Done", ADD_GITIGNORE, :green
 		else
-			say_status "Failed", "Add .powenv to .gitignore", :red
+			say_status "Failed", ADD_GITIGNORE, :red
 			shitHappens = true
 		end
 
 		if @pow.addRvmInfoToGemfile
-			say_status "Done", "Add ruby and gemset info to Gemfile", :green
+			say_status "Done", ADD_GEMFILE, :green
 		else
-			say_status "Failed", "Add ruby and gemset info to Gemfile", :red
+			say_status "Failed", ADD_GEMFILE, :red
 			shitHappens = true
 		end
 
@@ -148,55 +160,59 @@ class CLI < Thor
 
 	desc "open", "open the current rake app in the default browser"
 	def open
-		%x(open http://#{RvmPow::APP_NAME}.dev)
+		%x(open http://#{APP_NAME}.dev)
 	end
 
 
 	desc "clear", "disable pow"
 	long_desc <<-LONGDESC
 		`rvmpow clear` will remove only the files necessary for pow.
+
+		It's essentially reverting to the state before you ran `rvmpow init
+
+
 	LONGDESC
 	def clear
-		exitIfNotRakeAppOrNoRvm
+		exec_cmd {nil}
 		shitHappens = false
 
 		if @pow.restoreGitignore
-			say_status "Done", "Remove rvmpow entries from .gitignore", :green
+			say_status "Done", REMOVE_GITIGNORE, :green
 		else
-			say_status "Failed", "Remove rvmpow entries from .gitignore", :red
+			say_status "Failed", REMOVE_GITIGNORE, :red
 			shitHappens = true
 		end
 
 		if @pow.restoreGemfile
-			say_status "Done", "Remove rvmpow entries from Gemfile", :green
+			say_status "Done", REMOVE_GEMFILE, :green
 		else
-			say_status "Failed", "Remove rvmpow entries from Gemfile", :red
+			say_status "Failed", REMOVE_GEMFILE, :red
 			shitHappens = true
 		end
 
 		if @pow.deletePowenvFile
-			say_status "Done", "Delete .powenv file", :green
+			say_status "Done", REMOVE_POWENV, :green
 		else
-			say_status "Failed", "Delete .powenv file", :red
+			say_status "Failed", REMOVE_POWENV, :red
 			shitHappens = true
 		end
 
 		if @pow.deleteRestartFile
-			say_status "Done", "Delete restart file", :green
+			say_status "Done", REMOVE_RESTART, :green
 		else
-			say_status "Failed", "Delete restart file", :red
+			say_status "Failed", REMOVE_RESTART, :red
 			shitHappens = true
 		end
 
 		if @pow.deletePowLink
-			say_status "Done", "Delete pow link", :green
+			say_status "Done", REMOVE_LINK, :green
 		else
-			say_status "Failed", "Delete pow link", :red
+			say_status "Failed", REMOVE_LINK, :red
 			shitHappens = true
 		end
 
 		if shitHappens
-			say "Removing rvmpow traces failed.", :red
+			say "Reverting all changes failed.", :red
 		end
 	end
 
@@ -205,23 +221,6 @@ class CLI < Thor
 
 	desc "remove SUBCOMMAND", "remove specific options"
 	subcommand "remove", Remove
-
-	private
-
-		def rakeApp?
-			File.exists?(RvmPow::CONFIG_RU)
-		end
-
-		def rvm?
-			File.exists?(RvmPow::RVM_BINARY)
-		end
-
-		def exitIfNotRakeAppOrNoRvm
-			if !(rakeApp? && rvm?)
-				error "The current directory does not seem to be the root of a rake app or rvm is not installed. Nothing to do!"
-				exit 0
-			end
-		end
 end
 
 CLI.start(ARGV)

@@ -12,6 +12,16 @@ module RvmPow
   CONFIG_RU = "#{RvmPow::RAKE_APP_DIRECTORY}/config.ru"
   GEMFILE_MATCHER = /.#\srvmpow.ruby\s'\d(\.\d)+'.#ruby-gemset=\S+/m
   GITIGNORE_MATCHER = /.#\srvmpow.\.powenv/m
+  ADD_POWENV = "Add .powenv file"
+  REMOVE_POWENV = "Remove .powenv file"
+  ADD_LINK = "Add app link in ~/.pow"
+  REMOVE_LINK = "Remove app link from ~/.pow"
+  TOUCH_RESTART = "Touch restart.txt file in ./tmp/"
+  REMOVE_RESTART = "Remove restart.txt file from ./tmp/"
+  ADD_GITIGNORE = "Add '.powenv' to ./.gitignore"
+  REMOVE_GITIGNORE = "Remove .powenv from ./.gitignore"
+  ADD_GEMFILE = "Add rvm ruby and gemset information to ./Gemfile"
+  REMOVE_GEMFILE = "Remove rvm and gemset information from ./Gemfile"
 
 	POWENV = <<-EOF
 # detect `$rvm_path`
