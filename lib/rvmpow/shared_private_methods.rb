@@ -1,6 +1,6 @@
 # constants loaded in rvmpow.rb
 
-module RvmPow
+module Shared
 	private
 
 		def rakeApp?

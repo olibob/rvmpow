@@ -9,34 +9,34 @@ require 'rvmpow'
 require 'rvmpow/shared_private_methods'
 
 class Add < Thor
-	include RvmPow
+	include Shared
 
 	def initialize(*args)
 	  super
-	  @pow = Pow.new
+	  @pow = RvmPow::Pow.new
 	end
 
-	desc "powenv", ADD_POWENV
+	desc "powenv", RvmPow::ADD_POWENV
 	def powenv
 		exec_cmd { @pow.createPowenvFile }
 	end
 
-	desc "powlink", ADD_LINK
+	desc "powlink", RvmPow::ADD_LINK
 	def powlink
 		exec_cmd { @pow.createPowLink }
 	end
 
-	desc "restart_file", TOUCH_RESTART
-	def restart_file
+	desc "restart", RvmPow::TOUCH_RESTART
+	def restart
 		exec_cmd { @pow.touchRestartFile }
 	end
 
-	desc "gitignore", ADD_GITIGNORE
+	desc "gitignore", RvmPow::ADD_GITIGNORE
 	def gitignore
 		exec_cmd { @pow.gitignorePowenv }
 	end
 
-	desc "addRvmInfoToGemfile", ADD_GEMFILE
+	desc "addRvmInfoToGemfile", RvmPow::ADD_GEMFILE
 	def gemfile
 		exec_cmd { @pow.addRvmInfoToGemfile }
 	end
@@ -44,34 +44,34 @@ end
 
 
 class Remove < Thor
-	include RvmPow
+	include Shared
 
 	def initialize(*args)
 	  super
-	  @pow = Pow.new
+	  @pow = RvmPow::Pow.new
 	end
 
-	desc "powenv", REMOVE_POWENV
+	desc "powenv", RvmPow::REMOVE_POWENV
 	def powenv
 		exec_cmd { @pow.deletePowenvFile }
 	end
 
-	desc "restart", REMOVE_RESTART
+	desc "restart", RvmPow::REMOVE_RESTART
 	def restart
 		exec_cmd { @pow.deleteRestartFile }
 	end
 
-	desc "powlink", REMOVE_LINK
+	desc "powlink", RvmPow::REMOVE_LINK
 	def powlink
 		exec_cmd { @pow.deletePowLink }
 	end
 
-	desc "gitignore", REMOVE_GITIGNORE
+	desc "gitignore", RvmPow::REMOVE_GITIGNORE
 	def gitignore
 		exec_cmd { @pow.restoreGitignore }
 	end
 
-	desc "gemfile", REMOVE_GEMFILE
+	desc "gemfile", RvmPow::REMOVE_GEMFILE
 	def gemfile
 		exec_cmd {@pow.restoreGemfile }
 	end
@@ -79,11 +79,11 @@ end
 
 
 class CLI < Thor
-	include RvmPow
+	include Shared
 
 	def initialize(*args)
 	  super
-	  @pow = Pow.new
+	  @pow = RvmPow::Pow.new
 	end
 
 
@@ -112,55 +112,55 @@ class CLI < Thor
 		end
 
 		if @pow.createPowenvFile
-			say_status "Done", ADD_POWENV, :green
+			say_status "Done", RvmPow::ADD_POWENV, :green
 		else
-			say_status "Failed", ADD_POWENV, :red
+			say_status "Failed", RvmPow::ADD_POWENV, :red
 			shitHappens = true
 		end
 
 		if @pow.createPowLink
-			say_status "Done", ADD_LINK, :green
+			say_status "Done", RvmPow::ADD_LINK, :green
 		else
-			say_status "Failed", ADD_LINK, :red
+			say_status "Failed", RvmPow::ADD_LINK, :red
 			shitHappens = true
 		end
 
 		if @pow.touchRestartFile
-			say_status "Done", TOUCH_RESTART, :green
+			say_status "Done", RvmPow::TOUCH_RESTART, :green
 		else
-			say_status "Failed", TOUCH_RESTART, :red
+			say_status "Failed", RvmPow::TOUCH_RESTART, :red
 			shitHappens = true
 		end
 
 		if @pow.gitignorePowenv
-			say_status "Done", ADD_GITIGNORE, :green
+			say_status "Done", RvmPow::ADD_GITIGNORE, :green
 		else
-			say_status "Failed", ADD_GITIGNORE, :red
+			say_status "Failed", RvmPow::ADD_GITIGNORE, :red
 			shitHappens = true
 		end
 
 		if @pow.addRvmInfoToGemfile
-			say_status "Done", ADD_GEMFILE, :green
+			say_status "Done", RvmPow::ADD_GEMFILE, :green
 		else
-			say_status "Failed", ADD_GEMFILE, :red
+			say_status "Failed", RvmPow::ADD_GEMFILE, :red
 			shitHappens = true
 		end
 
 		if options[:show]
 			if shitHappens
-				say "Opening app in default browser canceled due to previous error(s)"
+				say_status "Failed", "Open app in default browser canceled due to previous error(s)", :red
 				say "Initialization failed.", :red
 			else
-				say "Opening app in default browser"
+				say_status "Done", "Open app in default browser", :green
 				open
 			end
 		end
 	end
 
 
-	desc "open", "open the current rake app in the default browser"
+	desc "open", "open the current Rack app in the default browser"
 	def open
-		%x(open http://#{APP_NAME}.dev)
+		%x(open http://#{RvmPow::APP_NAME}.dev)
 	end
 
 
@@ -168,7 +168,7 @@ class CLI < Thor
 	long_desc <<-LONGDESC
 		`rvmpow clear` will remove only the files necessary for pow.
 
-		It's essentially reverting to the state before you ran `rvmpow init
+		It's essentially reverting to the state before you ran `rvmpow init`
 
 
 	LONGDESC
@@ -177,37 +177,37 @@ class CLI < Thor
 		shitHappens = false
 
 		if @pow.restoreGitignore
-			say_status "Done", REMOVE_GITIGNORE, :green
+			say_status "Done", RvmPow::REMOVE_GITIGNORE, :green
 		else
-			say_status "Failed", REMOVE_GITIGNORE, :red
+			say_status "Failed", RvmPow::REMOVE_GITIGNORE, :red
 			shitHappens = true
 		end
 
 		if @pow.restoreGemfile
-			say_status "Done", REMOVE_GEMFILE, :green
+			say_status "Done", RvmPow::REMOVE_GEMFILE, :green
 		else
-			say_status "Failed", REMOVE_GEMFILE, :red
+			say_status "Failed", RvmPow::REMOVE_GEMFILE, :red
 			shitHappens = true
 		end
 
 		if @pow.deletePowenvFile
-			say_status "Done", REMOVE_POWENV, :green
+			say_status "Done", RvmPow::REMOVE_POWENV, :green
 		else
-			say_status "Failed", REMOVE_POWENV, :red
+			say_status "Failed", RvmPow::REMOVE_POWENV, :red
 			shitHappens = true
 		end
 
 		if @pow.deleteRestartFile
-			say_status "Done", REMOVE_RESTART, :green
+			say_status "Done", RvmPow::REMOVE_RESTART, :green
 		else
-			say_status "Failed", REMOVE_RESTART, :red
+			say_status "Failed", RvmPow::REMOVE_RESTART, :red
 			shitHappens = true
 		end
 
 		if @pow.deletePowLink
-			say_status "Done", REMOVE_LINK, :green
+			say_status "Done", RvmPow::REMOVE_LINK, :green
 		else
-			say_status "Failed", REMOVE_LINK, :red
+			say_status "Failed", RvmPow::REMOVE_LINK, :red
 			shitHappens = true
 		end
 

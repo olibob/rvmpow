@@ -42,8 +42,9 @@ module RvmPow
 					s = file.read
 					if (s.match(/ruby\s'\d(\.\d)+'/) || s.match(/ruby-gemset=/))
 						puts "\truby or gemset information already present in Gemfile"
+					else
+						file.puts "\n# rvmpow\nruby '#{rvm[:ruby]}'\n#ruby-gemset=#{rvm[:gemset]}"
 					end
-					file.puts "\n# rvmpow\nruby '#{rvm[:ruby]}'\n#ruby-gemset=#{rvm[:gemset]}"
 				end
 			end
 			fileAction action
@@ -51,25 +52,39 @@ module RvmPow
 
 		# removes rvmpow entries from .gitignore
 		def restoreGitignore
-			removeFromFile(RvmPow::GITIGNORE_FILE, RvmPow::GITIGNORE_MATCHER)
+			action = -> { removeFromFile(RvmPow::GITIGNORE_FILE, RvmPow::GITIGNORE_MATCHER) }
+			fileAction action
 		end
 
 		# removes rvmpow entries from Gemfile
 		def restoreGemfile
-			removeFromFile(RvmPow::GEMFILE, RvmPow::GEMFILE_MATCHER)
+			action = -> do
+				File.open(RvmPow::GEMFILE, 'r') do |file|
+					s = file.read
+					if !(s.match(/^#\srvmpow$/))
+						puts "\tNo rvmpow entry found, continuing ..."
+					else
+						removeFromFile(RvmPow::GEMFILE, RvmPow::GEMFILE_MATCHER)
+					end
+				end
+			end
+			fileAction action
 		end
 
 		# removes .powenv
 		def deletePowenvFile
-			FileUtils.rm_f RvmPow::POW_ENV_FILE
+			action = -> { FileUtils.rm_f RvmPow::POW_ENV_FILE }
+			fileAction action
 		end
 
 		def deleteRestartFile
-			FileUtils.rm_f RvmPow::RESTART_FILE
+			action = -> { FileUtils.rm_f RvmPow::RESTART_FILE }
+			fileAction action
 		end
 
 		def deletePowLink
-			FileUtils.rm_f RvmPow::POW_LINK
+			action = -> { FileUtils.rm_f RvmPow::POW_LINK }
+			fileAction action
 		end
 
 		private
