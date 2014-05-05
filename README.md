@@ -36,7 +36,7 @@ ruby-2.1.1@rails
 ~/Documents/Dev/Rails/newApp  ∆2.1.1 ›rails
 ```
 
-If needed, you can pick individual action via `rvmpow add` or `rvmpow remove`.
+If needed, you can pick individual actions via `rvmpow add` or `rvmpow remove`.
 
 **Words of caution**
 

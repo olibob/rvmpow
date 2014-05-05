@@ -31,12 +31,17 @@ class Add < Thor
 		exec_cmd { @pow.touchRestartFile }
 	end
 
+	desc "always_restart", RvmPow::TOUCH_ALWAYS_RESTART
+	def always_restart
+		exec_cmd { @pow.touchAlwaysRestartFile}
+	end
+
 	desc "gitignore", RvmPow::ADD_GITIGNORE
 	def gitignore
 		exec_cmd { @pow.gitignorePowenv }
 	end
 
-	desc "addRvmInfoToGemfile", RvmPow::ADD_GEMFILE
+	desc "gemfile", RvmPow::ADD_GEMFILE
 	def gemfile
 		exec_cmd { @pow.addRvmInfoToGemfile }
 	end
@@ -59,6 +64,11 @@ class Remove < Thor
 	desc "restart", RvmPow::REMOVE_RESTART
 	def restart
 		exec_cmd { @pow.deleteRestartFile }
+	end
+
+	desc "always_restart", RvmPow::REMOVE_ALWAYS_RESTART
+	def always_restart
+		exec_cmd { @pow.deleteAlwaysRestartFile }
 	end
 
 	desc "powlink", RvmPow::REMOVE_LINK
@@ -100,6 +110,7 @@ class CLI < Thor
 
 	LONGDESC
 	option :show, type: :boolean, desc: "open in default browser"
+	option :rackdev, type: :boolean, desc: "reload the app on each request (rack only - not needed for rails apps)"
 	def init
 		exec_cmd {nil}
 
@@ -144,6 +155,15 @@ class CLI < Thor
 		else
 			say_status "Failed", RvmPow::ADD_GEMFILE, :red
 			shitHappens = true
+		end
+
+		if options[:rackdev]
+			if @pow.touchAlwaysRestartFile
+				say_status "Done", RvmPow::TOUCH_ALWAYS_RESTART, :green
+			else
+				say_status "Failed", RvmPow::TOUCH_ALWAYS_RESTART, :red
+				shitHappens = true
+			end
 		end
 
 		if options[:show]
@@ -210,6 +230,14 @@ class CLI < Thor
 			say_status "Failed", RvmPow::REMOVE_LINK, :red
 			shitHappens = true
 		end
+
+		if @pow.deleteAlwaysRestartFile
+			say_status "Done", RvmPow::REMOVE_ALWAYS_RESTART, :green
+		else
+			say_status "Failed", RvmPow::REMOVE_ALWAYS_RESTART, :red
+			shitHappens = true
+		end
+
 
 		if shitHappens
 			say "Reverting all changes failed.", :red

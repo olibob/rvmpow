@@ -22,7 +22,19 @@ module RvmPow
 
 		# create tmp/restart.txt file
 		def touchRestartFile
-			action = -> { FileUtils.touch(RvmPow::RESTART_FILE) }
+			action = -> do
+				createTmpDirIfNeeded
+				FileUtils.touch(RvmPow::RESTART_FILE)
+			end
+			fileAction action
+		end
+
+		# create tmp/always_restart.txt file
+		def touchAlwaysRestartFile
+			action = -> do
+				createTmpDirIfNeeded
+				FileUtils.touch(RvmPow::ALWAYS_RESTART_FILE)
+			end
 			fileAction action
 		end
 
@@ -83,6 +95,12 @@ module RvmPow
 			fileAction action
 		end
 
+		# removes always_restart.txt file from ./tmp/
+		def deleteAlwaysRestartFile
+			action = -> { FileUtils.rm_f RvmPow::ALWAYS_RESTART_FILE }
+			fileAction action
+		end
+
 		# deletes the link is ~/.pow
 		def deletePowLink
 			action = -> { FileUtils.rm_f RvmPow::POW_LINK }
@@ -127,6 +145,10 @@ module RvmPow
 				rvm[:ruby] = rvmArray[0].split('-')[1]
 				rvm[:gemset] = rvmArray[1]
 				rvm
+			end
+
+			def createTmpDirIfNeeded
+				FileUtils.mkdir('tmp') if !File.exist?('tmp')
 			end
 	end
 

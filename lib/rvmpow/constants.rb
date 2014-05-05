@@ -3,6 +3,7 @@ module RvmPow
   RAKE_APP_DIRECTORY = File.expand_path('.')
   POW_ENV_FILE = "#{RAKE_APP_DIRECTORY}/.powenv"
   RESTART_FILE = "#{RAKE_APP_DIRECTORY}/tmp/restart.txt"
+  ALWAYS_RESTART_FILE = "#{RAKE_APP_DIRECTORY}/tmp/always_restart.txt"
   APP_NAME = RAKE_APP_DIRECTORY.split('/').last
   POW_LINK = "#{POW_PATH}/#{APP_NAME}"
   GITIGNORE_FILE = "#{RAKE_APP_DIRECTORY}/.gitignore"
@@ -18,6 +19,8 @@ module RvmPow
   REMOVE_LINK = "Remove app link from ~/.pow"
   TOUCH_RESTART = "Touch restart.txt file in ./tmp/"
   REMOVE_RESTART = "Remove restart.txt file from ./tmp/"
+  TOUCH_ALWAYS_RESTART = "Touch always_restart.txt file in ./tmp/"
+  REMOVE_ALWAYS_RESTART = "Remove always_restart.txt file from ./tmp/"
   ADD_GITIGNORE = "Add '.powenv' to ./.gitignore"
   REMOVE_GITIGNORE = "Remove .powenv from ./.gitignore"
   ADD_GEMFILE = "Add rvm ruby and gemset information to ./Gemfile"
