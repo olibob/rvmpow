@@ -144,7 +144,7 @@ module RvmPow
 
 				rg = `rvm-prompt`
 				if !rg.include?('@')
-					rvm[:ruby] = rg.chomp
+					rvm[:ruby] = rg.chomp.split('-')[1]
 					rvm[:gemset] = ''
 				else
 					rvmArray = rg.chomp.split('@')

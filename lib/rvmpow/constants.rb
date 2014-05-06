@@ -11,7 +11,7 @@ module RvmPow
   GEMFILE = "#{RAKE_APP_DIRECTORY}/Gemfile"
   RVM_BINARY = "#{File.expand_path('~/')}/.rvm/bin/rvm"
   CONFIG_RU = "#{RvmPow::RAKE_APP_DIRECTORY}/config.ru"
-  GEMFILE_MATCHER = /.#\srvmpow.ruby\s'\d(\.\d)+'.#ruby-gemset=\S+/m
+  GEMFILE_MATCHER = /.#\srvmpow.ruby\s'\d(\.\d)+'.#ruby-gemset=(\S+)?/m
   GITIGNORE_MATCHER = /.#\srvmpow.\.powenv/m
   ADD_POWENV = "Add .powenv file"
   REMOVE_POWENV = "Remove .powenv file"
