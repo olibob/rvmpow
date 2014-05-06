@@ -15,8 +15,6 @@
 
 I tested on newly created and updated rails apps, a bare minimal rack "*app*" and a bare minimal Sinatra app. Feedback is more than welcome.
 
-`rvmpow` **will fail** if you are not using a gemset ([you should](https://rvm.io/gemsets) ;-) If this is an issue for enough people, I'll fix it, but I don't think it's good practice to have all your gems in your default gemset.
-
 If you are already specifying the ruby version and gemset via .rvmrc or .ruby-version/.ruby-gemset or in your Gemfile, be aware that rvmpow uses Gemfile (which is a good thing  if you're going to deploy to [heroku](https://www.heroku.com/) for instance). `rvmpow` will not change the gemfile if ruby and gemset information is present. I advise to remove it prior to running `rvmpow`. If you use one of the other metioned methods, move or delete the files prior to running `rvmpow`.
 
 ## Examples

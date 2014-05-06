@@ -8,9 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = RvmPow::VERSION
   spec.authors       = ["Olivier Robert"]
   spec.email         = ["robby57@gmail.com"]
-  spec.summary       = ["Sets up pow (http://pow.cx/) for your rake app"]
-  spec.description   = ["Pow (http://pow.cx) needs to know what ruby and gemset is being used. rvm users can provide this information manually (http://rvm.io/integration/pow) or install `rvmpow` and it'll handle it for you, including adding the new configuration file to .gitignore and linking the new app for immediate browsing.
-"]
+  spec.summary       = %q{Sets up pow (http://pow.cx/) for your rake app}
+  spec.description   = %q{Pow (http://pow.cx) needs to know what ruby and gemset is being used. rvm users can provide this information manually (http://rvm.io/integration/pow) or install `rvmpow` and it'll handle it for you, including adding the new configuration file to .gitignore and linking the new app for immediate browsing.}
   spec.homepage      = "https://github.com/olibob/rvmpow"
   spec.license       = "MIT"
 

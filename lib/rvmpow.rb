@@ -141,9 +141,17 @@ module RvmPow
 			# @return [Hash]
 			def rvmInfo
 				rvm = {}
-				rvmArray = `rvm-prompt`.chomp.split('@')
-				rvm[:ruby] = rvmArray[0].split('-')[1]
-				rvm[:gemset] = rvmArray[1]
+
+				rg = `rvm-prompt`
+				if !rg.include?('@')
+					rvm[:ruby] = rg.chomp
+					rvm[:gemset] = ''
+				else
+					rvmArray = rg.chomp.split('@')
+					rvm[:ruby] = rvmArray[0].split('-')[1]
+					rvm[:gemset] = rvmArray[1]
+				end
+
 				rvm
 			end
 
